@@ -1,0 +1,14 @@
+# Gitignore for fuzz harnesses
+# Keep the source files (harness.py, SEEDS.md) but ignore runtime artifacts.
+
+# Runtime artifacts
+crashes/*.in
+hangs/*.in
+logs/*.log
+stats.json
+
+# Allow the directories themselves to be committed (they're in the source tree).
+# Use the explicit allow pattern:
+!crashes/.gitkeep
+!hangs/.gitkeep
+!logs/.gitkeep
