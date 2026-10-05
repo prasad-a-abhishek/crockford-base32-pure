@@ -92,14 +92,19 @@ C extensions, runs on Pyodide / WASM / AWS Lambda / an air-gapped
 machine. The alphabet is the alphabet, the check symbol is the check
 symbol, and every output is reproducible from the spec page.
 
-**Trade-offs (honest).** The MSB-first bit-accumulator is slightly
-slower than the RFC 4648 stdlib for the same byte count (~10-20% in
-microbenchmarks), because the algorithm is fixed-width and the
-substitution rules add branch checks. The decode path is also not
-lossless for inputs whose bit length is not a multiple of 8 — trailing
-bits that don't fill a complete byte are discarded (this is per the
-spec). If you need a lossless bit-level decode, use the
-`encode_int` / checksum-symbol paths instead.
+**Trade-offs (honest).** The MSB-first bit-accumulator is slower
+than the RFC 4648 stdlib `base64.b32encode` for the same byte
+count. The gap is size-dependent: roughly **1-2× slower on small
+random inputs (1 KB)** and up to **~14× slower on large random
+inputs (100 KB+)** — see `benchmarks/BENCHMARK.md` for the full
+10-workload profile. The algorithm is fixed-width and the
+substitution rules (`I/L/O` mapping, hyphen stripping, check
+symbol) add branch checks per character that the stdlib path
+doesn't carry. The decode path is also not lossless for inputs
+whose bit length is not a multiple of 8 — trailing bits that
+don't fill a complete byte are discarded (this is per the spec).
+If you need a lossless bit-level decode, use the `encode_int` /
+checksum-symbol paths instead.
 
 ## Key Features & Complete API Reference
 
@@ -158,10 +163,10 @@ print(encode(2 ** 64 - 1))  # "FZZZZZZZZZZZZ"
 
 # Integer encoding with check (forces extended check symbols)
 print(encode(32, checksum=True))   # "10*"   (1*32 + 0 = 32; check 32 = "*")
-print(encode(33, checksum=True))   # "10~"   (33 -> "~")
-print(encode(34, checksum=True))   # "10$"   (34 -> "$")
-print(encode(35, checksum=True))   # "10="   (35 -> "=")
-print(encode(36, checksum=True))   # "10U"   (36 -> "U")
+print(encode(33, checksum=True))   # "11~"   (33 -> "~")
+print(encode(34, checksum=True))   # "12$"   (34 -> "$")
+print(encode(35, checksum=True))   # "13="   (35 -> "=")
+print(encode(36, checksum=True))   # "14U"   (36 -> "U")
 
 # Decode with check validation
 assert decode("10*", checksum=True) == b"\x08"  # 10 input bits -> 1 byte
