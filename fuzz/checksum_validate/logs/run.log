@@ -1,0 +1,5 @@
+2026-10-05 20:49:38 start: iterations=500 seed=42
+2026-10-05 20:49:38 iter=0 op=validate_checksum ok hash=752bca3be4c30649
+2026-10-05 20:49:38 iter=100 op=validate_checksum ok hash=752bca3be4c30649
+2026-10-05 20:49:38 iter=400 op=end_to_end ok hash=ad8c34ba4d3413a8
+2026-10-05 20:49:38 done: {'iterations': 500, 'crashes': 0, 'hangs': 0, 'expected_errors': 205, 'validate_total_violations': 0, 'checksum_symbol_return_violations': 0, 'checksum_symbol_unexpected_value_errors': 0, 'end_to_end_valid_mismatches': 0, 'end_to_end_tampered_unexpected_matches': 0, 'uncaught_attribute_errors': 0, 'uncaught_type_errors': 0, 'uncaught_name_errors': 0, 'other_uncaught': 0, 'last_input_hash': '7af64c18fd870b1b', 'seed': 42}

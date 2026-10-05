@@ -1,0 +1,4 @@
+2026-10-05 20:49:38 start: iterations=500 seed=42
+2026-10-05 20:49:38 iter=0 op=decode ok hash=de8ae4ffe7201032
+2026-10-05 20:49:38 iter=300 op=round_trip ok hash=e9a5e448fe04219d
+2026-10-05 20:49:38 done: {'iterations': 500, 'crashes': 0, 'hangs': 0, 'expected_errors': 279, 'successful_round_trips': 81, 'round_trip_mismatches': 0, 'uncaught_attribute_errors': 0, 'uncaught_type_errors': 0, 'uncaught_value_errors_unexpected': 0, 'uncaught_name_errors': 0, 'other_uncaught': 0, 'encode_return_type_violations': 0, 'decode_return_type_violations': 0, 'last_input_hash': 'de8ae4ffe7201032', 'seed': 42}

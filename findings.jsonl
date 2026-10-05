@@ -1,0 +1,10 @@
+# findings.jsonl — cycle_178 / adversary / 04 (TRIAGE)
+# Schema: one JSON object per line, fields: {id, severity, surface, cwe, title, status, commit_pin}
+# This file is intentionally a comment-only header with zero data rows.
+# The card-04 spec requires a JSONL index of triaged findings; card 03 produced
+# zero findings, so the index is empty. A JSON parser that skips #-prefixed
+# comment lines will see an empty stream; a strict parser should treat the
+# absence of data rows as "zero findings" rather than as a parse error.
+#
+# If a future cycle produces findings, prepend each entry on its own line:
+#   {"id":"F-001","severity":"high","surface":"encode_decode","cwe":"CWE-20","title":"...","status":"needs_remediation","commit_pin":"<sha>"}
