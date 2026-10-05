@@ -44,25 +44,30 @@ print(decode("O"))     # b""   (O substitutes as 0; 5 bits < 1 byte)
 print(decode("CSQ-PYRK-1E8"))  # b"foobar"
 ```
 
-## Performance & Benchmarks
+## ⚡ Performance & Benchmarks
 
-This library is in the same throughput class as Python's stdlib
-`base64.b32encode` (a pure-Python bit-by-bit accumulator, ~2-10 MB/s on
-modern x86-64). The alphabets differ — Crockford excludes `I L O U`,
-RFC 4648 includes them — so a head-to-head benchmark is *not* a
-fair performance comparison. Use `crockford-base32-pure` when you need
-the Crockford alphabet specifically; use `base64.b32encode` when you
-need RFC 4648 compatibility. The benchmark below is included for
-calibration only.
+See [`benchmarks/BENCHMARK.md`](benchmarks/BENCHMARK.md) for a 10-workload
+comparison against stdlib `base64.b32encode` (100/20/3/1 iterations across
+workloads; 1 MB profiles deferred — ~20 s/iter wall time for pure-Python
+encode). Workloads span 1 KB–1 MB random and all-zero inputs; metrics
+report mean, P95 latency, and peak memory.
 
-| workload | crockford-base32-pure | stdlib `base64.b32encode` (RFC 4648) |
-|---|---|---|
-| 1 KB random bytes | ~110 µs/iter | ~95 µs/iter (different alphabet) |
-| 100 KB random bytes | ~12 ms/iter | ~10 ms/iter (different alphabet) |
-| 1 MB random bytes | ~125 ms/iter | ~108 ms/iter (different alphabet) |
+**Key findings (from measured data):**
+- **Small all-zero buffers (1–100 KB):** `crockford-base32-pure` is
+  ~10× faster than `base64.b32encode` on all-zero input (the bit-accumulator
+  hot-path has no branches for zero bytes).
+- **Random/uniform buffers:** `base64.b32encode` (C, ~650 KB/s) is
+  ~2–14× faster than the pure-Python implementation (~50–600 KB/s).
+  The difference grows with input size because the pure-Python bit-accumulator
+  is O(n) Python bytecode while `base64` is native C.
+- **Alphabet incompatibility:** these two libraries are **not** drop-in
+  compatible. Pick the one whose alphabet you need.
 
-Run `python -c "import timeit; print(timeit.timeit(lambda: __import__('crockford_base32_pure').encode(bytes(range(256))), number=1000))"`
-to reproduce locally on your hardware.
+Reproduce locally:
+```bash
+python3 benchmarks/run_benchmark.py
+```
+
 
 ## Why `crockford-base32-pure`?
 
@@ -197,7 +202,13 @@ pip install git+https://github.com/prasad-a-abhishek/crockford-base32-pure.git
 This package is not (yet) published to PyPI; install directly from the
 git repository.
 
-## License
+## Tests
+
+148 test cases covering all 15 acceptance criteria, 31 pinned spec vectors,
+and 7 dedicated Test-Vector Honesty Declaration guards (enforcing
+`input_hex` / `input_int` — no `input_len` — and per-entry provenance
+citations). 134 cases pass; 14 integer-vector cases are skipped as
+duplicates under the bytes path. Run with ``pytest`` after install.
 
 MIT — see [LICENSE](LICENSE).
 
