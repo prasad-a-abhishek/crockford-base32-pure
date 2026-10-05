@@ -131,7 +131,8 @@ def _iter_validate_checksum(rng: random.Random):
 
 def _iter_end_to_end(rng: random.Random):
     """Compute the check symbol for a valid body, append it, then validate — must
-    always return True. Then validate a tampered version — must return False."""
+    always return True. Then mutate the body to make the check fail, and validate
+    again — must return False."""
     n = rng.randint(1, 30)
     body = "".join(rng.choice(list(ALPHABET)) for _ in range(n))
     try:
@@ -139,9 +140,17 @@ def _iter_end_to_end(rng: random.Random):
     except CrockfordBase32Error:
         return ("end_to_end", lambda: None)
     valid_str = body + check
-    # Tamper: replace the check char with a random one
-    tampered_check = rng.choice(list(ALPHABET + EXTENDED + "?!@"))
-    tampered_str = body + tampered_check
+    # Tamper: change ONE body character to force a check mismatch.
+    if len(body) >= 1:
+        pos = rng.randrange(len(body))
+        original = body[pos]
+        # Pick a DIFFERENT character from the alphabet
+        new_char = rng.choice([c for c in ALPHABET if c != original])
+        tampered_body = body[:pos] + new_char + body[pos + 1:]
+    else:
+        # Body of length 0 is rare here (n>=1) but handle it.
+        tampered_body = rng.choice(list(ALPHABET))
+    tampered_str = tampered_body + check
     return ("end_to_end", lambda: (
         cb32.validate_checksum(valid_str), cb32.validate_checksum(tampered_str)
     ))
